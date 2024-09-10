@@ -1,0 +1,87 @@
+#include <stdio.h>
+
+#define SIZE 8
+
+// Funções para imprimir o tabuleiro
+void printBoard(char board[SIZE][SIZE]) {
+    printf("  a b c d e f g h\n");
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d ", i + 1);
+        for (int j = 0; j < SIZE; j++) {
+            printf("%c ", board[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Função para inicializar o tabuleiro
+void initializeBoard(char board[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if ((i + j) % 2 == 0) {
+                board[i][j] = ' ';
+            } else {
+                if (i < 3) {
+                    board[i][j] = 'b'; // Peças pretas
+                } else if (i > 4) {
+                    board[i][j] = 'w'; // Peças brancas
+                } else {
+                    board[i][j] = ' ';
+                }
+            }
+        }
+    }
+}
+
+// Função para verificar se a movimentação é válida
+int isValidMove(int startX, int startY, int endX, int endY, char board[SIZE][SIZE]) {
+    if (endX < 0 || endX >= SIZE || endY < 0 || endY >= SIZE) {
+        return 0; // Fora dos limites do tabuleiro
+    }
+    if (board[endX][endY] != ' ') {
+        return 0; // Destino não está vazio
+    }
+    if ((endX + endY) % 2 == 0) {
+        return 0; // Destino não é um quadrado válido
+    }
+    int dx = endX - startX;
+    int dy = endY - startY;
+    if (abs(dx) == 1 && abs(dy) == 1) {
+        return 1; // Movimento diagonal simples
+    }
+    return 0; // Movimento inválido
+}
+
+// Função para mover uma peça
+void movePiece(int startX, int startY, int endX, int endY, char board[SIZE][SIZE]) {
+    if (isValidMove(startX, startY, endX, endY, board)) {
+        board[endX][endY] = board[startX][startY];
+        board[startX][startY] = ' ';
+    } else {
+        printf("Movimento inválido!\n");
+    }
+}
+
+int main() {
+    char board[SIZE][SIZE];
+    initializeBoard(board);
+    printBoard(board);
+
+    int startX, startY, endX, endY;
+    char startCol, endCol;
+
+    while (1) {
+        printf("Digite o movimento (ex: a3 b4): ");
+        scanf(" %c%d %c%d", &startCol, &startX, &endCol, &endX);
+
+        startY = startCol - 'a';
+        endY = endCol - 'a';
+        startX--; // Ajusta para índice baseado em 0
+        endX--;
+
+        movePiece(startX, startY, endX, endY, board);
+        printBoard(board);
+    }
+
+    return 0;
+}
